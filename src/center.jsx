@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import DATA, { TABS } from "../data.js";
-import firefly from './images/Firefly.jpg';
+import firefly from './images/firefly.jpg';
 
 const POPUP_W = 300;
 const POPUP_H = 430;
