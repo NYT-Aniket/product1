@@ -2,8 +2,8 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import './index.css'
-import Desktop from './center.jsx'
-import Mobile from './left.jsx'
+import Desktop from './desktop.jsx'
+import Mobile from './mobile.jsx'
 import NotFound from './pages/NotFound.jsx'
 
 const PortfolioPage = () => (
