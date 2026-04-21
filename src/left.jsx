@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import DATA, { TABS } from "../data.js";
+import firefly from './images/firefly.jpg';
 
 /* ─── PHOTO SHEET MODAL ──────────────────────────────────────────────── */
 function PhotoSheet({ item, onClose }) {
@@ -139,12 +140,12 @@ export default function Mobile() {
         <div style={{ flexShrink: 0, padding: "52px 32px 24px" }}>
           {/* Avatar */}
           <div style={{
-            width: 60, height: 60, borderRadius: "50%", overflow: "hidden",
+            width: 87, height: 87, borderRadius: "50%", overflow: "hidden",
             marginBottom: 20,
             boxShadow: "0 0 0 1.5px rgba(0,0,0,0.08), 0 2px 10px rgba(0,0,0,0.07)",
           }}>
             <img
-              src="https://thumbs.dreamstime.com/b/square-frame-beautiful-nature-scenery-close-up-dandelion-against-cloudy-blue-sky-white-flower-blooms-amid-green-154769697.jpg"
+              src={firefly}
               alt="Aniket Patel"
               style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
             />

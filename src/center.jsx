@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import DATA, { TABS } from "../data.js";
+import firefly from './images/Firefly.jpg';
 
 const POPUP_W = 300;
 const POPUP_H = 430;
@@ -178,12 +179,12 @@ export default function App() {
       }}>
         <div>
           <div style={{
-            width: 64, height: 64, borderRadius: "50%", overflow: "hidden",
+            width: 87, height: 87, borderRadius: "50%", overflow: "hidden",
             marginBottom: 22,
             boxShadow: "0 0 0 1px rgba(0,0,0,0.08), 0 2px 12px rgba(0,0,0,0.07)",
           }}>
             <img
-              src="https://thumbs.dreamstime.com/b/square-frame-beautiful-nature-scenery-close-up-dandelion-against-cloudy-blue-sky-white-flower-blooms-amid-green-154769697.jpg"
+              src={firefly}
               alt="Aniket"
               style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
             />

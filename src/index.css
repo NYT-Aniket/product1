@@ -42,6 +42,7 @@ body {
     #f8f9fa 100%
   );
   background-size: 400% 400%;
+  background-position: 0% 50%;
   animation: bgShift 20s ease infinite;
 }
 
