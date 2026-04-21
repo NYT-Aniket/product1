@@ -1,182 +1,268 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
+import DATA, { TABS } from "../data.js";
 
-const items = [
-  "Interaction",
-  "@Everyone",
-  "/Gif",
-  "/Silent",
-  "Gyro Pride Theme",
-  "Word Effects",
-  "Reactions",
-    "Interaction",
-  "@Everyone",
-  "/Gif",
-  "/Silent",
-  "Gyro Pride Theme",
-  "Word Effects",
-  "Reactions",
-];
-
-// Photo array - add your photos here. If fewer photos than items, they will repeat
-const photos = [
-  "https://plus.unsplash.com/premium_photo-1675448891119-bda089d46450?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTF8fG5hdHVyZSUyMHBob25lJTIwd2FsbHBhcGVyfGVufDB8fDB8fHww",
-  "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=600&fit=crop",
-  "https://images.unsplash.com/photo-1504608524841-42fe6f032b4b?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8bmF0dXJlJTIwcGhvbmUlMjB3YWxscGFwZXJ8ZW58MHx8MHx8fDA%3D",
-  "https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=400&h=600&fit=crop",  
-  "https://images.unsplash.com/photo-1624280664758-4350adc906c1?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Nnx8bmF0dXJlJTIwcGhvbmUlMjB3YWxscGFwZXJ8ZW58MHx8MHx8fDA%3D",
-  "https://images.unsplash.com/photo-1614978474506-42d30acd205d?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTN8fG5hdHVyZSUyMHBob25lJTIwd2FsbHBhcGVyfGVufDB8fDB8fHww",
-  "https://plus.unsplash.com/premium_photo-1664117436431-aaa0d75814fe?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTl8fG5hdHVyZSUyMHBob25lJTIwd2FsbHBhcGVyfGVufDB8fDB8fHww"
-];
-
-// Function to get photo based on item index
-const getPhotoUrl = (itemIndex) => {
-  return photos[itemIndex % photos.length];
-};
+const POPUP_W = 300;
+const POPUP_H = 430;
 
 export default function App() {
-  const [hoveredItem, setHoveredItem] = useState(null);
-  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
-  const [smoothPos, setSmoothPos] = useState({ x: 0, y: 0 });
-  const targetPos = React.useRef({ x: 0, y: 0 });
+  const [activeTab, setActiveTab] = useState("Projects");
+  const [hoveredIdx, setHoveredIdx] = useState(null);
+  const listRef = useRef(null);
+  const popupRef = useRef(null);
 
-  const handleMouseMove = (e) => {
-    targetPos.current = { x: e.clientX, y: e.clientY };
-  };
+  const sx = useRef(0), sy = useRef(0);
+  const tx = useRef(0), ty = useRef(0);
+  const raf = useRef(null);
 
-  React.useEffect(() => {
-    let animationId;
-    const smoothFollow = () => {
-      setSmoothPos(prev => ({
-        x: prev.x + (targetPos.current.x - prev.x) * 0.15,
-        y: prev.y + (targetPos.current.y - prev.y) * 0.15,
-      }));
-      animationId = requestAnimationFrame(smoothFollow);
+  useEffect(() => {
+    const tick = () => {
+      sx.current += (tx.current - sx.current) * 0.13;
+      sy.current += (ty.current - sy.current) * 0.13;
+      if (popupRef.current) {
+        popupRef.current.style.transform = `translate(${sx.current + 28}px, ${sy.current - POPUP_H * 0.55}px)`;
+      }
+      raf.current = requestAnimationFrame(tick);
     };
-    animationId = requestAnimationFrame(smoothFollow);
-    return () => cancelAnimationFrame(animationId);
+    raf.current = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf.current);
   }, []);
 
+  const handleMouseMove = (e) => {
+    tx.current = e.clientX;
+    ty.current = e.clientY;
+  };
+
+  const handleTab = (tab) => {
+    if (tab === activeTab) return;
+    setActiveTab(tab);
+    setHoveredIdx(null);
+    if (listRef.current) listRef.current.scrollTop = 0;
+  };
+
+  const items = DATA[activeTab];
+  const hoveredItem = hoveredIdx !== null ? items[hoveredIdx] : null;
+  const showPopup = !!hoveredItem?.photo;
+
   return (
-    <div className="h-screen w-full flex relative" onMouseMove={handleMouseMove} style={{ overflow: 'hidden' }}>
-
-      {/* LEFT SIDE (SCROLLABLE) */}
-    <div className="
-      w-[90vh]
-      h-full            
-      overflow-y-auto
-      scrollbar-hide
-      flex
-      items-start
-      justify-center
-      pt-20
-      text-[1.25rem]
-    ">
-      <div className="
-        w-89
-        flex flex-col
-        gap-6
-      ">
-        <div className="h-42" />
-        {items.map((item, i) => (
-          <div 
-            key={i} 
-            className="flex justify-between items-center text-gray-800 rounded-2xl hover:bg-white hover:shadow-xl transition-all duration-300 cursor-pointer hover:scale-105 w-full" 
-            style={{ padding: "0.75rem 3rem" }}
-            onMouseEnter={() => setHoveredItem(i)}
-            onMouseLeave={() => setHoveredItem(null)}
-          >
-            <span className="font-semibold text-lg">{item}</span>
-            <span className="text-black ml-8 text-lg">2022</span>
-          </div>
-        ))}
-        <div className="h-20" />
-      </div>
-    </div>
-
-      {/* RIGHT SIDE (FIXED CENTER) */}
-      <div className="
-        w-1/2
-        h-full
-        flex
-        flex-col
-        items-center
-        justify-center
-      ">
-        <div className="flex flex-col gap-3">
-
-          {/* IMAGE */}
-          <div className="w-40 h-40 rounded-full overflow-hidden mx-auto mb-6">
-            <img
-              src="https://thumbs.dreamstime.com/b/square-frame-beautiful-nature-scenery-close-up-dandelion-against-cloudy-blue-sky-white-flower-blooms-amid-green-154769697.jpg"
-              className="w-full h-full object-cover"
-            />
-          </div>
-
-          {/* TEXT */}
-          <h1 className="text-2xl font-bold text-black leading-tight mb-6">
-            Aniket Patel,<br />
-            Code to understand how{" "}
-            <span className="bg-linear-to-r from-pink-400 to-purple-500 bg-clip-text text-transparent">
-              things
-            </span>{" "}
-            work
-          </h1>
-
-          {/* LINKS */}
-          <div className="flex gap-6 text-black opacity-70 text-lg">
-            <a href="#" className="hover:opacity-100 transition-opacity">Projects</a>
-            <a href="#" className="hover:opacity-100 transition-opacity">Experience</a>
-            <a href="#" className="hover:opacity-100 transition-opacity">About</a>
-            <a href="#" className="hover:opacity-100 transition-opacity">Contact</a>
-          </div>
-        </div>
-      </div>
-
-      {/* PHOTO POPUP MODAL */}
-      {hoveredItem !== null && (
-        <div 
-          className="pointer-events-auto bg-white rounded-3xl shadow-2xl overflow-hidden animate-fadeIn" 
-          style={{ 
-            width: "350px", 
-            height: "500px",
-            position: 'fixed',
-            left: `calc(${smoothPos.x}px + 175px)`,
-            top: `calc(${smoothPos.y}px - 290px)`,
-            zIndex: 50,
-            willChange: 'left, top',
-            pointerEvents: 'none',
-            margin: 0,
-            padding: 0
-          }}
-        >
-          <img 
-            src={getPhotoUrl(hoveredItem)} 
-            alt="Preview" 
-            className="w-full h-full object-cover"
-            style={{ display: 'block' }}
-            onError={(e) => {
-              e.target.src = "https://via.placeholder.com/350x500?text=Photo";
-            }}
-          />
-        </div>
-      )}
-
+    <div
+      onMouseMove={handleMouseMove}
+      style={{ width: "100vw", height: "100dvh", display: "flex", overflow: "hidden", background: "#f5f4f0" }}
+    >
       <style>{`
-        @keyframes fadeIn {
-          from {
-            opacity: 0;
-            transform: scale(0.9);
-          }
-          to {
-            opacity: 1;
-            transform: scale(1);
-          }
+        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap');
+        *::-webkit-scrollbar { display: none; }
+        * { scrollbar-width: none; box-sizing: border-box; }
+
+        @keyframes popIn {
+          from { opacity: 0; scale: 0.87; }
+          to   { opacity: 1; scale: 1; }
         }
-        .animate-fadeIn {
-          animation: fadeIn 0.3s ease-out;
+        @keyframes rowIn {
+          from { opacity: 0; transform: translateX(-8px); }
+          to   { opacity: 1; transform: translateX(0); }
+        }
+
+        .list-row {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 11px 16px;
+          border-radius: 12px;
+          cursor: pointer;
+          transition:
+            background 0.18s ease,
+            box-shadow 0.18s ease,
+            opacity 0.2s ease,
+            transform 0.15s ease;
+          animation: rowIn 0.28s ease both;
+          font-family: 'DM Sans', -apple-system, sans-serif;
+          /* subtle border always present but invisible until hover */
+          border: 1px solid transparent;
+        }
+
+        .list-row:hover {
+          background: #ffffff;
+          border-color: rgba(0,0,0,0.06);
+          box-shadow:
+            0 1px 3px rgba(0,0,0,0.06),
+            0 4px 16px rgba(0,0,0,0.07),
+            0 1px 0px rgba(255,255,255,0.9) inset;
+          transform: scale(1.012);
+        }
+
+        .list-row:active {
+          transform: scale(0.985);
+          box-shadow:
+            0 1px 2px rgba(0,0,0,0.05),
+            0 2px 8px rgba(0,0,0,0.06);
+          transition-duration: 0.08s;
+        }
+
+        .list-row.dimmed {
+          opacity: 0.22;
         }
       `}</style>
 
+      {/* ── LEFT: scrollable list ── */}
+      <div
+        ref={listRef}
+        style={{
+          width: "60%", height: "100%",
+          overflowY: "auto", overflowX: "hidden",
+          WebkitOverflowScrolling: "touch",
+          fontFamily: "'DM Sans', -apple-system, sans-serif",
+        }}
+      >
+        {/* outer padding; rows themselves get horizontal padding from className */}
+        <div style={{ padding: "188px 24px 80px 26vh", maxWidth: 720 }}>
+          {items.map((item, i) => {
+            const isContact = activeTab === "Contact";
+            const isClickable = !!item.url;
+            const isDimmed = hoveredIdx !== null && hoveredIdx !== i;
+
+            return (
+              <div
+                key={`${activeTab}-${i}`}
+                className={`list-row${isDimmed ? " dimmed" : ""}`}
+                style={{ animationDelay: `${i * 30}ms` }}
+                onMouseEnter={() => setHoveredIdx(i)}
+                onMouseLeave={() => setHoveredIdx(null)}
+                onClick={() => { if (item.url) window.open(item.url, "_blank", "noopener noreferrer"); }}
+              >
+                {/* left: name */}
+                <div>
+                  <span style={{
+                    fontSize: 19.5, fontWeight: 400, color: "#111",
+                    letterSpacing: "-0.015em", display: "block",
+                  }}>
+                    {isContact ? item.label : item.name}
+                  </span>
+                  {isContact && (
+                    <span style={{
+                      fontSize: 19.5, color: "#bbb", fontWeight: 300,
+                      display: "block", marginTop: 1, letterSpacing: "-0.005em",
+                    }}>
+                      {item.name}
+                    </span>
+                  )}
+                </div>
+
+                {/* right: year + arrow */}
+                <div style={{ display: "flex", alignItems: "center", gap: 8, flexShrink: 0 }}>
+                  {item.year && (
+                    <span style={{
+                      fontSize: 19.5, color: "#c8c8c8",
+                      fontVariantNumeric: "tabular-nums", fontWeight: 300,
+                    }}>
+                      {item.year}
+                    </span>
+                  )}
+                  {isClickable && (
+                    <svg width="10" height="10" viewBox="0 0 12 12" fill="none" style={{ opacity: 0.22 }}>
+                      <path d="M2 10L10 2M10 2H4M10 2V8" stroke="#111" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                  )}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* ── RIGHT: identity panel ── */}
+      <div style={{
+        width: "45%", height: "100%",
+        display: "flex", alignItems: "center", justifyContent: "flex-start",
+        padding: "0 64px",
+        fontFamily: "'DM Sans', -apple-system, sans-serif",
+      }}>
+        <div>
+          <div style={{
+            width: 64, height: 64, borderRadius: "50%", overflow: "hidden",
+            marginBottom: 22,
+            boxShadow: "0 0 0 1px rgba(0,0,0,0.08), 0 2px 12px rgba(0,0,0,0.07)",
+          }}>
+            <img
+              src="https://thumbs.dreamstime.com/b/square-frame-beautiful-nature-scenery-close-up-dandelion-against-cloudy-blue-sky-white-flower-blooms-amid-green-154769697.jpg"
+              alt="Aniket"
+              style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
+            />
+          </div>
+
+          <h1 style={{ fontSize: 26, fontWeight: 500, color: "#0d0d0d", letterSpacing: "-0.03em", lineHeight: 1.25, margin: "0 0 6px" }}>
+            Aniket Patel,
+          </h1>
+
+          <p style={{ fontSize: 17, fontWeight: 300, color: "#0d0d0d", letterSpacing: "-0.015em", lineHeight: 1.4, margin: "0 0 30px" }}>
+            Code to understand how{" "}
+            <span style={{
+              background: "linear-gradient(135deg,#ec4899,#a855f7)",
+              WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text",
+            }}>things</span>{" "}work
+          </p>
+
+          <nav style={{ display: "flex", gap: 22 }}>
+            {TABS.map((tab) => {
+              const active = activeTab === tab;
+              return (
+                <button key={tab} onClick={() => handleTab(tab)} style={{
+                  background: "none", border: "none", padding: "0 0 2px",
+                  cursor: "pointer", fontFamily: "inherit",
+                  fontSize: 15, fontWeight: 400,
+                  color: active ? "#0d0d0d" : "#c8c8c8",
+                  borderBottom: `1.5px solid ${active ? "#0d0d0d" : "transparent"}`,
+                  transition: "color 0.18s, border-color 0.18s",
+                  userSelect: "none", letterSpacing: "-0.01em",
+                  WebkitTapHighlightColor: "transparent",
+                }}>
+                  {tab}
+                </button>
+              );
+            })}
+          </nav>
+        </div>
+      </div>
+
+      {/* ── Popup: anchored at 0,0 moved via transform only ── */}
+      <div
+        ref={popupRef}
+        style={{
+          position: "fixed", top: 0, left: 0,
+          width: POPUP_W, height: POPUP_H,
+          borderRadius: 22, overflow: "hidden",
+          boxShadow: "0 40px 100px rgba(0,0,0,0.24), 0 8px 28px rgba(0,0,0,0.10)",
+          pointerEvents: "none",
+          zIndex: 100,
+          willChange: "transform",
+          opacity: showPopup ? 1 : 0,
+          transition: "opacity 0.15s ease",
+        }}
+      >
+        {hoveredItem?.photo && (
+          <>
+            <img
+              key={hoveredItem.photo}
+              src={hoveredItem.photo} alt=""
+              style={{
+                width: "100%", height: "100%", objectFit: "cover", display: "block",
+                animation: "popIn 0.22s cubic-bezier(0.32,0.72,0,1) both",
+              }}
+              onError={(e) => { e.currentTarget.style.display = "none"; }}
+            />
+            <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(0,0,0,0.6) 0%, transparent 52%)" }} />
+            <div style={{ position: "absolute", bottom: 22, left: 22, right: 22 }}>
+              <p style={{ color: "#fff", fontSize: 14.5, fontWeight: 500, letterSpacing: "-0.015em", margin: 0, fontFamily: "'DM Sans', sans-serif" }}>
+                {hoveredItem.name}
+              </p>
+              {hoveredItem.year && (
+                <p style={{ color: "rgba(255,255,255,0.5)", fontSize: 12, margin: "3px 0 0", fontWeight: 300, fontFamily: "'DM Sans', sans-serif" }}>
+                  {hoveredItem.year}
+                </p>
+              )}
+            </div>
+          </>
+        )}
+      </div>
     </div>
   );
 }

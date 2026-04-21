@@ -2,12 +2,46 @@ import { Link } from 'react-router-dom'
 
 export default function NotFound() {
   return (
-    <div className="min-h-screen text-white flex flex-col items-center justify-center">
-      <h1 className="text-6xl font-bold text-red-500 mb-4">404</h1>
-      <p className="text-2xl mb-8">Page Not Found</p>
-      <Link to="/" className="bg-green-400 hover:bg-green-500 text-black font-bold py-2 px-4 rounded">
-        Go Home
+    <div
+      style={{
+        width: '100vw',
+        height: '100dvh',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        fontFamily: "'DM Sans', -apple-system, sans-serif",
+        background: '#faf9f7',
+        gap: 16,
+      }}
+    >
+      <style>{`@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400&family=DM+Serif+Display&display=swap');`}</style>
+      <span style={{ fontSize: 13, color: '#ccc', letterSpacing: '0.04em', textTransform: 'uppercase' }}>404</span>
+      <h1 style={{
+        fontSize: 28,
+        fontWeight: 400,
+        color: '#0d0d0d',
+        letterSpacing: '-0.03em',
+        fontFamily: "'DM Serif Display', serif",
+      }}>
+        Page not found
+      </h1>
+      <Link
+        to="/"
+        style={{
+          marginTop: 8,
+          fontSize: 13,
+          color: '#999',
+          letterSpacing: '-0.01em',
+          borderBottom: '1px solid rgba(0,0,0,0.12)',
+          paddingBottom: 1,
+          transition: 'color 0.15s',
+        }}
+        onMouseEnter={(e) => (e.currentTarget.style.color = '#111')}
+        onMouseLeave={(e) => (e.currentTarget.style.color = '#999')}
+      >
+        ← Back home
       </Link>
     </div>
-  );
+  )
 }

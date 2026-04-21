@@ -1,174 +1,148 @@
 import { useState, useRef, useEffect } from "react";
+import DATA, { TABS } from "../data.js";
 
-const photos = [
-  "https://plus.unsplash.com/premium_photo-1675448891119-bda089d46450?w=600&auto=format&fit=crop&q=60",
-  "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=600&fit=crop",
-  "https://images.unsplash.com/photo-1504608524841-42fe6f032b4b?w=600&auto=format&fit=crop&q=60",
-  "https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=400&h=600&fit=crop",
-  "https://images.unsplash.com/photo-1624280664758-4350adc906c1?w=600&auto=format&fit=crop&q=60",
-  "https://images.unsplash.com/photo-1614978474506-42d30acd205d?w=600&auto=format&fit=crop&q=60",
-  "https://plus.unsplash.com/premium_photo-1664117436431-aaa0d75814fe?w=600&auto=format&fit=crop&q=60",
-];
-
-const DATA = {
-  Projects: [
-    { name: "Interaction Design",   year: "2024", photo: photos[0] },
-    { name: "@Everyone Broadcast",  year: "2023", photo: photos[1] },
-    { name: "/Gif Engine",          year: "2023", photo: photos[2] },
-    { name: "/Silent Mode",         year: "2022", photo: photos[3] },
-    { name: "Gyro Pride Theme",     year: "2022", photo: photos[4] },
-    { name: "Word Effects",         year: "2022", photo: photos[5] },
-    { name: "Reactions 2.0",        year: "2021", photo: photos[6] },
-    { name: "Tweets in Thread",     year: "2021", photo: photos[0] },
-    { name: "Super React",          year: "2021", photo: photos[1] },
-    { name: "Shops Products",       year: "2020", photo: photos[2] },
-  ],
-  Experience: [
-    { name: "Frontend Developer", year: "2025", photo: null },
-    { name: "UI Dev ",            year: "2026", photo: null },
-    { name: "Financial Analyst",           year: "2024", photo: null },
-    { name: "Algo Trader",              year: "2024", photo: null },
-  ],
-  About: [
-    { name: "Based on Mt5",  year: "", photo: null },
-    { name: "Open to opportunities",  year: "", photo: null },
-    { name: "React & Node.js",     year: "2025", photo: null },
-    { name: "2 years experience Algo Trading",     year: "2024", photo: null },
-  ],
-  Contact: [
-    { name: "patelkamlesh2386@gmail.com", year: "", photo: null },
-    { name: "Instagram",      year: "", URL: "https://www.instagram.com/mrt_aniket/" },
-    { name: "GitHub",           year: "", photo: null },
-    { name: "LinkedIn",         year: "", photo: null },
-  ],
-};
-
-const NAV_TABS = ["Projects", "Experience", "About", "Contact"];
-
-function PhotoModal({ item, onClose }) {
+/* ─── PHOTO SHEET MODAL ──────────────────────────────────────────────── */
+function PhotoSheet({ item, onClose }) {
   useEffect(() => {
-    const fn = (e) => e.key === "Escape" && onClose();
-    window.addEventListener("keydown", fn);
-    return () => window.removeEventListener("keydown", fn);
+    const onKey = (e) => e.key === "Escape" && onClose();
+    window.addEventListener("keydown", onKey);
+    document.body.style.overflow = "hidden";
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      document.body.style.overflow = "";
+    };
   }, [onClose]);
 
   return (
     <div
       onClick={(e) => e.target === e.currentTarget && onClose()}
       style={{
-        position: "fixed", inset: 0, zIndex: 50,
-        background: "rgba(0,0,0,0.5)",
-        display: "flex", alignItems: "center", justifyContent: "center",
-        animation: "bgin .2s ease both",
+        position: "fixed", inset: 0, zIndex: 200,
+        background: "rgba(0,0,0,0.55)",
+        backdropFilter: "blur(12px)",
+        WebkitBackdropFilter: "blur(12px)",
+        display: "flex", alignItems: "flex-end", justifyContent: "center",
+        padding: "0 0 20px",
+        animation: "bgIn 0.22s ease both",
       }}
     >
-      <div style={{ position: "relative" }}>
-        {/* Close button */}
-        <button
-          onClick={onClose}
-          style={{
-            position: "absolute", top: -48, right: 0,
-            width: 40, height: 40, borderRadius: "50%",
-            background: "#000", border: "none", cursor: "pointer",
-            display: "flex", alignItems: "center", justifyContent: "center",
-          }}
-        >
-          <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-            <path d="M1 1l10 10M11 1L1 11" stroke="#fff" strokeWidth="1.8" strokeLinecap="round"/>
-          </svg>
-        </button>
-
-        {/* Card */}
-        <div
-          style={{
-            width: "min(320px, 86vw)",
-            background: "#fff",
-            borderRadius: 24,
-            overflow: "hidden",
-            animation: "popUp .26s cubic-bezier(.32,.72,0,1) both",
-          }}
-        >
+      <div style={{
+        width: "min(400px, 94vw)",
+        background: "#fff",
+        borderRadius: 28,
+        overflow: "hidden",
+        animation: "sheetUp 0.28s cubic-bezier(0.32,0.72,0,1) both",
+        boxShadow: "0 -4px 60px rgba(0,0,0,0.18)",
+      }}>
+        {/* Image */}
+        <div style={{ position: "relative" }}>
           <img
-            src={item.photo}
-            alt={item.name}
-            style={{
-              width: "100%",
-              aspectRatio: "9/16",
-              maxHeight: "65vh",
-              objectFit: "cover",
-              display: "block",
-            }}
+            src={item.photo} alt={item.name}
+            style={{ width: "100%", aspectRatio: "4/3", objectFit: "cover", display: "block" }}
+            onError={(e) => { e.currentTarget.style.display = "none"; }}
           />
-          <div style={{ padding: "16px 20px 18px" }}>
-            <p style={{ margin: 0, fontSize: 14, fontWeight: 600, color: "#111", letterSpacing: "-0.01em" }}>
-              {item.name}
-            </p>
-            {item.year && (
-              <p style={{ margin: "3px 0 0", fontSize: 12, color: "#aaa", fontWeight: 400 }}>
-                {item.year}
+          {/* Close pill */}
+          <button onClick={onClose} style={{
+            position: "absolute", top: 14, right: 14,
+            width: 32, height: 32, borderRadius: "50%",
+            background: "rgba(0,0,0,0.48)",
+            backdropFilter: "blur(6px)", WebkitBackdropFilter: "blur(6px)",
+            border: "none", cursor: "pointer",
+            display: "flex", alignItems: "center", justifyContent: "center",
+            color: "#fff",
+          }}>
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+              <path d="M1 1l10 10M11 1L1 11" stroke="#fff" strokeWidth="1.6" strokeLinecap="round"/>
+            </svg>
+          </button>
+        </div>
+
+        {/* Info */}
+        <div style={{ padding: "20px 24px 26px" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+            <div>
+              <p style={{ margin: 0, fontSize: 17, fontWeight: 500, color: "#0d0d0d", letterSpacing: "-0.02em" }}>
+                {item.name}
               </p>
-            )}
+              {item.year && (
+                <p style={{ margin: "4px 0 0", fontSize: 13, color: "#c0c0c0", fontWeight: 300 }}>
+                  {item.year}
+                </p>
+              )}
+            </div>
           </div>
+
+          {item.url && (
+            <a
+              href={item.url} target="_blank" rel="noopener noreferrer"
+              style={{
+                display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
+                marginTop: 18, padding: "13px 20px",
+                background: "#0d0d0d", color: "#fff",
+                borderRadius: 14, fontSize: 14, fontWeight: 500,
+                textDecoration: "none", letterSpacing: "-0.01em",
+                transition: "opacity 0.15s",
+              }}
+              onMouseEnter={(e) => (e.currentTarget.style.opacity = "0.78")}
+              onMouseLeave={(e) => (e.currentTarget.style.opacity = "1")}
+            >
+              View on GitHub
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+                <path d="M2 10L10 2M10 2H4M10 2V8" stroke="#fff" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </a>
+          )}
         </div>
       </div>
     </div>
   );
 }
 
-export default function Left() {
+/* ─── MOBILE COMPONENT ───────────────────────────────────────────────── */
+export default function Mobile() {
   const [activeTab, setActiveTab] = useState("Projects");
   const [openItem, setOpenItem]   = useState(null);
   const listRef                   = useRef(null);
 
-  const handleTabChange = (tab) => {
+  const handleTab = (tab) => {
     if (tab === activeTab) return;
     setActiveTab(tab);
+    setOpenItem(null);
     if (listRef.current) listRef.current.scrollTop = 0;
   };
+
+  const items = DATA[activeTab];
 
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap');
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-        html { height: 100%; }
-        body { height: 100%; -webkit-font-smoothing: antialiased; }
-        #root { height: 100%; }
-        ::-webkit-scrollbar { display: none; }
+        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap');
+        *::-webkit-scrollbar { display: none; }
+        * { scrollbar-width: none; }
         @keyframes fadeRow {
           from { opacity: 0; transform: translateY(5px); }
           to   { opacity: 1; transform: translateY(0); }
         }
-        @keyframes bgin  { from { opacity: 0; } to { opacity: 1; } }
-        @keyframes popUp {
-          from { opacity: 0; transform: scale(.94); }
-          to   { opacity: 1; transform: scale(1);   }
+        @keyframes bgIn    { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes sheetUp {
+          from { opacity: 0; transform: translateY(36px); }
+          to   { opacity: 1; transform: translateY(0); }
         }
       `}</style>
 
-      <div
-        style={{
-          width: "100vw",
-          height: "100dvh",
-          display: "flex",
-          flexDirection: "column",
-          overflow: "hidden",
-          fontFamily: "'Inter', sans-serif",
-        }}
-      >
-        {/* ── HEADER ── */}
-        <div style={{ flexShrink: 0, padding: "52px 32px 28px" }}>
-
+      <div style={{
+        width: "100vw", height: "100dvh",
+        display: "flex", flexDirection: "column", overflow: "hidden",
+        fontFamily: "'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif",
+      }}>
+        {/* ── HEADER ──────────────────────────────────────────────── */}
+        <div style={{ flexShrink: 0, padding: "52px 32px 24px" }}>
           {/* Avatar */}
-          <div
-            style={{
-              width: 64, height: 64,
-              borderRadius: "50%",
-              overflow: "hidden",
-              marginBottom: 20,
-              boxShadow: "0 0 0 1.5px rgba(0,0,0,0.08)",
-            }}
-          >
+          <div style={{
+            width: 60, height: 60, borderRadius: "50%", overflow: "hidden",
+            marginBottom: 20,
+            boxShadow: "0 0 0 1.5px rgba(0,0,0,0.08), 0 2px 10px rgba(0,0,0,0.07)",
+          }}>
             <img
               src="https://thumbs.dreamstime.com/b/square-frame-beautiful-nature-scenery-close-up-dandelion-against-cloudy-blue-sky-white-flower-blooms-amid-green-154769697.jpg"
               alt="Aniket Patel"
@@ -176,56 +150,35 @@ export default function Left() {
             />
           </div>
 
-          <h1
-            style={{
-              fontSize: 28, fontWeight: 600, color: "#111",
-              letterSpacing: "-0.02em", lineHeight: 1.25, marginBottom: 6,
-            }}
-          >
+          {/* Name */}
+          <h1 style={{ fontSize: 28, fontWeight: 500, color: "#0d0d0d", letterSpacing: "-0.03em", lineHeight: 1.2, margin: "0 0 5px" }}>
             Aniket Patel,
           </h1>
 
-          <p
-            style={{
-              fontSize: 17, fontWeight: 400, color: "#111",
-              letterSpacing: "-0.01em", lineHeight: 1.4, marginBottom: 24,
-            }}
-          >
-            code to understand how things{" "}
-            <span
-              style={{
-                background: "linear-gradient(90deg,#ec4899,#8b5cf6)",
-                WebkitBackgroundClip: "text",
-                WebkitTextFillColor: "transparent",
-                backgroundClip: "text",
-              }}
-            >
-              work
-            </span>
+          {/* Tagline */}
+          <p style={{ fontSize: 17, fontWeight: 300, color: "#0d0d0d", letterSpacing: "-0.015em", lineHeight: 1.4, margin: "0 0 26px" }}>
+            Code to understand how{" "}
+            <span style={{
+              background: "linear-gradient(135deg,#ec4899,#a855f7)",
+              WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text",
+            }}>things</span>{" "}work
           </p>
 
-          {/* Nav links */}
-          <nav style={{ display: "flex", gap: 24, flexWrap: "wrap" }}>
-            {NAV_TABS.map((tab) => {
-              const isActive = activeTab === tab;
+          {/* Nav tabs — same horizontal style as original */}
+          <nav style={{ display: "flex", gap: 20, flexWrap: "wrap" }}>
+            {TABS.map((tab) => {
+              const active = activeTab === tab;
               return (
-                <button
-                  key={tab}
-                  onClick={() => handleTabChange(tab)}
-                  style={{
-                    fontSize: 14,
-                    fontWeight: isActive ? 500 : 400,
-                    color: isActive ? "#111" : "#aaa",
-                    background: "none", border: "none",
-                    borderBottom: isActive ? "1.5px solid #111" : "1.5px solid transparent",
-                    paddingBottom: 2,
-                    cursor: "pointer",
-                    fontFamily: "inherit",
-                    transition: "color .15s",
-                    userSelect: "none",
-                    WebkitTapHighlightColor: "transparent",
-                  }}
-                >
+                <button key={tab} onClick={() => handleTab(tab)} style={{
+                  background: "none", border: "none", padding: "0 0 2px",
+                  cursor: "pointer", fontFamily: "inherit",
+                  fontSize: 15, fontWeight: 400,
+                  color: active ? "#0d0d0d" : "#c8c8c8",
+                  borderBottom: `1.5px solid ${active ? "#0d0d0d" : "transparent"}`,
+                  transition: "color 0.18s, border-color 0.18s",
+                  userSelect: "none", letterSpacing: "-0.01em",
+                  WebkitTapHighlightColor: "transparent",
+                }}>
                   {tab}
                 </button>
               );
@@ -236,48 +189,87 @@ export default function Left() {
         {/* Divider */}
         <div style={{ flexShrink: 0, height: "0.5px", background: "rgba(0,0,0,0.08)", margin: "0 32px" }} />
 
-        {/* ── LIST ── */}
+        {/* ── LIST ──────────────────────────────────────────────── */}
         <div
           key={activeTab}
           ref={listRef}
           style={{
             flex: 1, minHeight: 0,
             overflowY: "auto", overflowX: "hidden",
-            padding: "0 32px 48px",
+            padding: "0 32px 56px",
             WebkitOverflowScrolling: "touch",
             overscrollBehavior: "contain",
           }}
         >
-          {DATA[activeTab].map((item, i) => (
-            <div
-              key={i}
-              onClick={() => item.photo && setOpenItem(item)}
-              style={{
-                display: "flex", justifyContent: "space-between", alignItems: "center",
-                padding: "20px 0",
-                borderBottom: "0.5px solid rgba(0,0,0,0.06)",
-                cursor: item.photo ? "pointer" : "default",
-                transition: "opacity .15s",
-                animation: "fadeRow .28s ease both",
-                animationDelay: `${i * 36}ms`,
+          {items.map((item, i) => (
+            <MobileRow
+              key={`${activeTab}-${i}`}
+              item={item} index={i} tab={activeTab}
+              onTap={() => {
+                const isContact = activeTab === "Contact";
+                if (isContact && item.url) {
+                  window.open(item.url, "_blank", "noopener noreferrer");
+                } else if (item.photo) {
+                  setOpenItem(item);
+                }
               }}
-              onMouseEnter={(e) => item.photo && (e.currentTarget.style.opacity = ".4")}
-              onMouseLeave={(e) => (e.currentTarget.style.opacity = "1")}
-            >
-              <span style={{ fontSize: 16, fontWeight: 400, color: "#1a1a1a", letterSpacing: "-0.01em" }}>
-                {item.name}
-              </span>
-              {item.year && (
-                <span style={{ fontSize: 13, color: "#ccc", fontWeight: 400, flexShrink: 0, marginLeft: 24, fontVariantNumeric: "tabular-nums" }}>
-                  {item.year}
-                </span>
-              )}
-            </div>
+            />
           ))}
         </div>
       </div>
 
-      {openItem && <PhotoModal item={openItem} onClose={() => setOpenItem(null)} />}
+      {openItem && <PhotoSheet item={openItem} onClose={() => setOpenItem(null)} />}
     </>
+  );
+}
+
+/* ─── MOBILE ROW ─────────────────────────────────────────────────────── */
+function MobileRow({ item, index, tab, onTap }) {
+  const [pressed, setPressed] = useState(false);
+  const isContact   = tab === "Contact";
+  const hasAction   = isContact ? !!item.url : !!item.photo;
+
+  return (
+    <div
+      onClick={hasAction ? onTap : undefined}
+      onTouchStart={() => hasAction && setPressed(true)}
+      onTouchEnd={() => setPressed(false)}
+      onTouchCancel={() => setPressed(false)}
+      style={{
+        display: "flex", justifyContent: "space-between", alignItems: "center",
+        padding: "20px 0",
+        borderBottom: "0.5px solid rgba(0,0,0,0.07)",
+        cursor: hasAction ? "pointer" : "default",
+        opacity: pressed ? 0.45 : 1,
+        transition: "opacity 0.12s",
+        animation: `fadeRow 0.28s ease both`,
+        animationDelay: `${index * 32}ms`,
+        WebkitTapHighlightColor: "transparent",
+        userSelect: "none",
+      }}
+    >
+      <div style={{ minWidth: 0 }}>
+        <span style={{ fontSize: 16, fontWeight: 400, color: "#111", letterSpacing: "-0.015em", display: "block" }}>
+          {isContact ? item.label : item.name}
+        </span>
+        {isContact && (
+          <span style={{ fontSize: 12.5, color: "#c0c0c0", fontWeight: 300, display: "block", marginTop: 2, letterSpacing: "-0.005em" }}>
+            {item.name}
+          </span>
+        )}
+      </div>
+      <div style={{ display: "flex", alignItems: "center", gap: 10, flexShrink: 0, marginLeft: 16 }}>
+        {item.year && (
+          <span style={{ fontSize: 12.5, color: "#d0d0d0", fontVariantNumeric: "tabular-nums", fontWeight: 300 }}>
+            {item.year}
+          </span>
+        )}
+        {hasAction && (
+          <svg width="11" height="11" viewBox="0 0 12 12" fill="none" style={{ opacity: 0.25 }}>
+            <path d="M2 10L10 2M10 2H4M10 2V8" stroke="#111" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+        )}
+      </div>
+    </div>
   );
 }

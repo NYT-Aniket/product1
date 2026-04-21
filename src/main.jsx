@@ -2,31 +2,27 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import './index.css'
-import Cent from './center.jsx'
-import PhoneUI from './left.jsx'
-import Home from './pages/Home.jsx'
+import Desktop from './center.jsx'
+import Mobile from './left.jsx'
 import NotFound from './pages/NotFound.jsx'
+
+const PortfolioPage = () => (
+  <div className="bg-ambient" style={{ width: '100%', height: '100dvh', overflow: 'hidden' }}>
+    {/* Desktop ≥ 768px */}
+    <div className="hidden md:block w-full h-full">
+      <Desktop />
+    </div>
+    {/* Mobile < 768px */}
+    <div className="md:hidden w-full h-full">
+      <Mobile />
+    </div>
+  </div>
+)
 
 const router = createBrowserRouter([
   {
     path: '/',
-    element: (
-      <div className="w-full h-screen bg-ambient">
-        {/* Desktop/Laptop UI */}
-        <div className="hidden md:flex w-full h-full">
-          <Cent/>
-        </div>
-        
-        {/* Mobile/Phone UI */}
-        <div className="md:hidden w-full h-full">
-          <PhoneUI/>
-        </div>
-      </div>
-    ),
-  },
-  {
-    path: '/home',
-    element: <Home />,
+    element: <PortfolioPage />,
   },
   {
     path: '*',
