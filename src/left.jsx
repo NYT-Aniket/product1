@@ -132,7 +132,7 @@ export default function Left() {
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap');
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
         html { height: 100%; }
-        body { height: 100%; background: #f5f5f7; -webkit-font-smoothing: antialiased; }
+        body { height: 100%; -webkit-font-smoothing: antialiased; }
         #root { height: 100%; }
         ::-webkit-scrollbar { display: none; }
         @keyframes fadeRow {
@@ -153,7 +153,6 @@ export default function Left() {
           display: "flex",
           flexDirection: "column",
           overflow: "hidden",
-          background: "#fff",
           fontFamily: "'Inter', sans-serif",
         }}
       >

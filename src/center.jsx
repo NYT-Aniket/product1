@@ -57,7 +57,7 @@ export default function App() {
   }, []);
 
   return (
-    <div className="h-screen w-full flex bg-linear-to-br from-[#f2f7ff] to-[#ecf5ff] relative" onMouseMove={handleMouseMove} style={{ overflow: 'hidden' }}>
+    <div className="h-screen w-full flex relative" onMouseMove={handleMouseMove} style={{ overflow: 'hidden' }}>
 
       {/* LEFT SIDE (SCROLLABLE) */}
     <div className="
